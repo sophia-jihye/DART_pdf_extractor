@@ -1,4 +1,4 @@
-freeglut3-dev
-libgtk2.0-dev
+#freeglut3-dev
+#libgtk2.0-dev
 imagemagick
 ghostscript
