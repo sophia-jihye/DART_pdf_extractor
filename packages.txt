@@ -1,4 +1,9 @@
-#freeglut3-dev
-#libgtk2.0-dev
-imagemagick
-ghostscript
+ImageMagick                         7.0.10.27-2
+libGraphicsMagick++12               1.3.36-2
+libGraphicsMagick3                  1.3.36-2
+libGraphicsMagickWand2              1.3.36-2
+libMagickC++6_8                     6.9.10.11-4
+libMagickCore6_6                    6.9.10.11-4
+libMagickCore7_7                    7.0.10.27-2
+libMagickWand6_6                    6.9.10.11-4
+libMagickWand7_7                    7.0.10.27-2
