@@ -1,6 +1,6 @@
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/sjskoko/dart_pdf_bounding_box-task/main/pdf_bbox_app.py)
 
-# DART_pdf_bounding_box-task
+# DARTPlumber: DART pdf object extractor
 This project will be used for DART pdf object detection task. 
 
 ## Installation
