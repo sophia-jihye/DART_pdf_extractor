@@ -15,9 +15,17 @@ pip install -r requirements.txt
 ```
 ## Getting Started
 Use following parsers in your Linux terminal:
-Table extraction (-t) and image extraction (-i) caption extraction (-c)
+- table extraction (-t)
+- image extraction (-i)
+- caption extraction (-c)
+- pdf_dir (-dir)
+- save_dir (-save)
+- croped_file_only (-crop)
+- total_page_with_segmentation (-page_image) 
+
+Below provides only table images with corresponding captions in jpeg and txt file respectively.
 ```sh
-python main.py -t -i -c 
+python main.py -t -c -crop
 ```
 
 
