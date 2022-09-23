@@ -4,9 +4,15 @@
 This project will be used for object detection task. 
 
 # Installation
-git clone https://github.com/ZPdesu/SEAN.git
-cd SEAN/
-
+Clone this repo.
+```sh
+git clone https://github.com/snu-dm/DART_pdf_extractor.git
+cd DART_pdf_extractor/
+```
+This code requires python 3+ and pdfplumber. Please Install dependencies by
+```sh
+pip install -r requirements.txt
+```
 # To do
 1. img_file\[미래에셋대우스팩3호]분기보고서(2022.05.03)\[미래에셋대우스팩3호]분기보고서(2022.05.03)_31.png -> 해당 파일에서 표는 감지되지만, 단락(paragraph)이 포함된 상자는 감지하지 못함
 
