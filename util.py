@@ -8,7 +8,7 @@ import pdfplumber
 def get_file_names(folder_path):
     if not os.path.exists(folder_path):
         folder_name = folder_path.split('/')[-1]
-        exit(f'FolderNotExistError: There is no [{folder_name}] folder')
+        # exit(f'FolderNotExistError: There is no [{folder_name}] folder')
 
     ## list file name
     pdf_file_lists = os.listdir(folder_path)
@@ -85,8 +85,7 @@ def save_pickle_file(data, save_path, file_name, data_type):
     with open(f'{save_path}/{file_name[:-4]}/{file_name[:-4]}_{data_type}.pickle', 'wb') as fw:
         pickle.dump(data, fw)
 
-
-
+#########
 
 
 
@@ -171,3 +170,4 @@ if __name__ == '__main__':
 
 
 
+    pdf_file_lists = os.listdir('sample_pdf_file')

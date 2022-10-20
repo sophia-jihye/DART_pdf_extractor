@@ -5,3 +5,5 @@ pdfplumber
 Pillow
 Wand
 stqdm
+pdf2jpg
+pdf2image

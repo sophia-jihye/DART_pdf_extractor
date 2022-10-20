@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+img_file/
+DocBank/
+sample_img_file/sample copy/sample copy_0.png
+sample_img_file/sample copy/sample copy_1.png
+sample_img_file/sample copy/sample copy_2.png
+sample_img_file/sample copy/sample copy_3.png
