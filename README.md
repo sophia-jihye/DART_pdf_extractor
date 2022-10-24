@@ -1,8 +1,5 @@
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/sjskoko/dart_pdf_bounding_box-task/main/pdf_bbox_app.py)
 
-# dart_PDF_bounding_box-task
-This project will be used for object detection task. 
-
 # DART_pdf_bounding_box-task
 This project will be used for DART pdf object detection task. 
 
