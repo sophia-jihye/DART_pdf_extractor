@@ -19,7 +19,7 @@ class Extractor():
         # make sub output dir
         self.cropped_image_save_dir = None
         self.cropped_table_save_dir = None
-        self.cropped_text_save_dir = None
+        self.cropped_caption_save_dir = None
         self.page_image_save_dir = None
 
         # make super save directory
@@ -50,10 +50,10 @@ class Extractor():
                         os.mkdir(cropped_table_save_dir)
 
                 if args.image == True:
-                    cropped_text_save_dir = os.path.join(sub_path, 'cropped_text')
+                    cropped_caption_save_dir = os.path.join(sub_path, 'cropped_caption')
 
-                    if not os.path.exists(cropped_text_save_dir):
-                        os.mkdir(cropped_text_save_dir)
+                    if not os.path.exists(cropped_caption_save_dir):
+                        os.mkdir(cropped_caption_save_dir)
 
             # generate page image dir
             if args.page_image == True:    
@@ -382,16 +382,16 @@ class Extractor():
                     im.save(os.path.join(pdf_save_directory, 'page_image', f'page{j}.png'), format='PNG')
 
                 if self.args.crop == True and self.args.caption == True:
-                    # with open(os.path.join(pdf_save_directory, 'cropped_text', f'{str(j)}.json'), 'w', encoding='UTF-8') as f: 
+                    # with open(os.path.join(pdf_save_directory, 'cropped_caption', f'{str(j)}.json'), 'w', encoding='UTF-8') as f: 
                     #     json.dump(caption_info, f, indent="\t", ensure_ascii=False)
                     if self.args.table == True:
                         for table_num, table_txt in enumerate(caption_info['table']):
-                            with open(os.path.join(pdf_save_directory, 'cropped_text', f'page{j}_table{table_num}.txt'), 'w', encoding='UTF-8') as f:
+                            with open(os.path.join(pdf_save_directory, 'cropped_caption', f'page{j}_table{table_num}.txt'), 'w', encoding='UTF-8') as f:
                                 f.write('\n'.join(table_txt))
 
                     if self.args.image == True:
                         for image_num, image_txt in enumerate(caption_info['image']):
-                            with open(os.path.join(pdf_save_directory, 'cropped_text', f'page{j}_image{image_num}.txt'), 'w', encoding='UTF-8') as f:
+                            with open(os.path.join(pdf_save_directory, 'cropped_caption', f'page{j}_image{image_num}.txt'), 'w', encoding='UTF-8') as f:
                                 f.write('\n'.join(image_txt))
 
 
