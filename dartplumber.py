@@ -99,7 +99,7 @@ class Extractor():
             table_bbox_list = [i.bbox for i in table_objects]
             # print(j, 'page Table', table_bbox_list)
             for bbox in bbox_padding(table_bbox_list):
-                im.draw_rect(bbox, stroke='red')
+                im.draw_rect(bbox, fill=(255, 0, 0, 30))
         
         return im
     
@@ -109,7 +109,7 @@ class Extractor():
             img_bbox_list = [(image['x0'], page.height - image['y1'], image['x1'], page.height - image['y0']) for image in img_objects]
             # print(j, 'page Image', img_bbox_list)
             for bbox in bbox_padding(img_bbox_list):
-                im.draw_rect(bbox, stroke='blue')
+                im.draw_rect(bbox, fill=(255, 255, 0, 30))
 
         return im
 
