@@ -17,6 +17,7 @@ class Extractor():
         self.file_names = get_file_names(args.pdf_dir)
 
         # make sub output dir
+        self.cropped_text_save_dir = None
         self.cropped_image_save_dir = None
         self.cropped_table_save_dir = None
         self.cropped_caption_save_dir = None
@@ -37,6 +38,12 @@ class Extractor():
 
             # generate crop image dir
             if args.crop == True:
+                if args.text == True:
+                    cropped_text_save_dir = os.path.join(sub_path, 'cropped_text')
+
+                    if not os.path.exists(cropped_text_save_dir):
+                        os.mkdir(cropped_text_save_dir)
+
                 if args.image == True:
                     cropped_image_save_dir = os.path.join(sub_path, 'cropped_image')
 
@@ -82,7 +89,7 @@ class Extractor():
     def image_object_to_bbox(self, img_objects, page):
         return [(image['x0'], page.height - image['y1'], image['x1'], page.height - image['y0']) for image in img_objects]
 
-    def text_object_to_bbox(self, text_objects, page):
+    def text_object_to_bbox(self, text_objects, page): # 사용 x
         return [(text['x0'], page.height - text['y1'], text['x1'], page.height - text['y0']) for text in text_objects]
 
 
@@ -310,6 +317,7 @@ class Extractor():
         pdf_file_lists = self.file_names
         save_path = self.save_dir
 
+        text_is_true = self.args.text
         table_is_true = self.args.table
         image_is_true = self.args.image
         caption_is_true = self.args.caption
@@ -347,7 +355,14 @@ class Extractor():
                 image_objects = self.page_to_image_object(page)
                 text_objects = self.page_to_text_object(page)
 
-                # extract tabel
+                # extract text
+                if text_is_true == True:
+                    if self.args.crop == True:
+                        only_text = [''.join(i['text']) for i in text_objects]
+                        with open(os.path.join(pdf_save_directory, 'cropped_text', f'page{j}.txt'), 'w', encoding='UTF-8') as f:
+                            f.write(' '.join(only_text))
+
+                # extract table
                 if table_is_true == True:
                     if self.args.page_image == True:
                         im = self.table_extractor(table_objects, im)
