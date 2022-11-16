@@ -8,6 +8,10 @@ from caption_module.caption_extraction import *
 
 class Extractor():
     def __init__(self, args):
+        # resolution
+        self.resolution_object = args.resolution_object
+        self.resolution_page = args.resolution_page
+
         # with file_name
         self.pdf_dir = args.pdf_dir
         self.save_dir = args.save_dir
@@ -340,7 +344,7 @@ class Extractor():
                 page = pages[j]
                 page_height = page.height
 
-                im = page.to_image(resolution=400)
+                im = page.to_image(resolution=self.resolution_page)
                 table_objects = self.page_to_table_object(page)
                 image_objects = self.page_to_image_object(page)
                 text_objects = self.page_to_text_object(page)
@@ -359,7 +363,7 @@ class Extractor():
                     if self.args.crop == True:
                         table_bboxs = self.table_object_to_bbox(table_objects)
                         for table_num, table_bbox in enumerate(table_bboxs):
-                            crop_table_im = page.crop(table_bbox).to_image(resolution=200)
+                            crop_table_im = page.crop(table_bbox).to_image(resolution=self.resolution_object)
                             crop_table_im.save(os.path.join(pdf_save_directory, 'cropped_table', f'page{j}_table{table_num}.png'))
                     
                 # extract image
@@ -369,7 +373,7 @@ class Extractor():
                     if self.args.crop == True:
                         image_bboxs = self.image_object_to_bbox(image_objects, page)
                         for image_num, image_bbox in enumerate(image_bboxs):
-                            crop_image_im = page.crop(image_bbox).to_image(resolution=200)
+                            crop_image_im = page.crop(image_bbox).to_image(resolution=self.resolution_object)
                             crop_image_im.save(os.path.join(pdf_save_directory, 'cropped_image', f'page{j}_image{image_num}.png'))
                 
                 # extract caption
@@ -395,7 +399,7 @@ class Extractor():
                             for image_num, image_txt in enumerate(caption_info_image):
                                 with open(os.path.join(pdf_save_directory, 'cropped_caption', f'page{j}_image{image_num}.txt'), 'w', encoding='UTF-8') as f:
                                     f.write('\n'.join(image_txt))
-                                                     
+
 
                 # append page image to page_img_list
                 page_img_list.append(im)
