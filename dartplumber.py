@@ -1,5 +1,5 @@
 import os
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 import pdfplumber
 
 from util import *
@@ -56,7 +56,7 @@ class Extractor():
                     if not os.path.exists(cropped_table_save_dir):
                         os.mkdir(cropped_table_save_dir)
 
-                if args.image == True:
+                if args.caption == True:
                     cropped_caption_save_dir = os.path.join(sub_path, 'cropped_caption')
 
                     if not os.path.exists(cropped_caption_save_dir):
@@ -113,28 +113,19 @@ class Extractor():
 
         return im
 
-    def caption_extractor(self, page, im, image_object, table_object, text_object, threshold_caption_image=100, threshold_caption_table=30, threshold_chunk=45, threshold_line_1=11, threshold_line_2=21, resolution=400, check=False):
+    def caption_extractor_image(self, im, image_object, text_object, threshold_caption_image=100, threshold_caption_table=30, threshold_chunk=45, threshold_line_1=11, threshold_line_2=21):
         '''
-        pages: get_pages(pdf)의 결과물
         image_object, table_object, text_object: pdfplumber로 추출한 image, table, text 정보
-        corp: 결과를 저장할 폴더 이름 (str)
         threshold_caption_image: 해당 텍스트가 특정 키워드를 포함하는 경우 표/이미지의 캡션에 해당하는지 아닌지 구분하는 threshold (거리) (image에 대한 캡션 추출 시)
         threshold_caption_table: 해당 텍스트가 특정 키워드를 포함하는 경우 표/이미지의 캡션에 해당하는지 아닌지 구분하는 threshold (거리) (table에 대한 캡션 추출 시)
         threshold_chunk: 같은 줄에 있을 때 같은 chunk인지 아닌지 구분하는 threshold (거리)
         threshold_line_1: 한 문장이 다음 줄로 이어지는 것인지 아닌지 구분하는 threshold (y값 거리)
         threshold_line_2: 지금까지 인식한 마지막 캡션의 다음 텍스트 토큰이 특정 키워드를 포함하는 경우 해당 토큰이 이어지는 캡션인지 아닌지 구분하는 threshold (y값 거리)
-        check: False이면 모든 페이지에 대한 결과를 이미지 파일로 저장, json 파일도 저장
-            int값(1부터 시작, 저장되는 이미지 파일 이름과 같은 값)이면 해당 페이지에 대한 결과만 이미지 파일로 저장 (check 폴더에), json 파일은 저장 x
-
-        output: 페이지별로 캡션의 bounding box가 표시된 이미지 파일 + 추출한 캡션을 텍스트로 저장한 json 파일
         '''
-        result = {} # 추출한 캡션을 텍스트로 저장할 dictionary
-
-        result['image'] = []
-        result['table'] = []
+        result = []
 
         # image에 대한 캡션 추출
-        if (check == False) and len(image_object) != 0:
+        if len(image_object) != 0:
             image_data = image_object
             text_data = text_object
             image_bb_to_draw = []
@@ -205,8 +196,30 @@ class Extractor():
                 i_text_bb_to_draw.append(caption_bb_for_this_image)
                 i_text_contents.append(caption_text_for_this_image)
 
+        # 결과 저장   
+        if len(image_object) != 0:
+            for j in range(len(image_bb_to_draw)):
+                # im.draw_rect(image_bb_to_draw[j], fill=(255, 255, 0, 30))
+                im.draw_rects(i_text_bb_to_draw[j])
+                # print(f'(p.{p+1}) caption for image:', [' '.join(each_caption) for each_caption in i_text_contents[j]])
+                result.append([' '.join(each_caption) for each_caption in i_text_contents[j]])
+
+        return im, result
+
+
+    def caption_extractor_table(self, im, table_object, text_object, threshold_caption_image=100, threshold_caption_table=30, threshold_chunk=45, threshold_line_1=11, threshold_line_2=21):
+        '''
+        image_object, table_object, text_object: pdfplumber로 추출한 image, table, text 정보
+        threshold_caption_image: 해당 텍스트가 특정 키워드를 포함하는 경우 표/이미지의 캡션에 해당하는지 아닌지 구분하는 threshold (거리) (image에 대한 캡션 추출 시)
+        threshold_caption_table: 해당 텍스트가 특정 키워드를 포함하는 경우 표/이미지의 캡션에 해당하는지 아닌지 구분하는 threshold (거리) (table에 대한 캡션 추출 시)
+        threshold_chunk: 같은 줄에 있을 때 같은 chunk인지 아닌지 구분하는 threshold (거리)
+        threshold_line_1: 한 문장이 다음 줄로 이어지는 것인지 아닌지 구분하는 threshold (y값 거리)
+        threshold_line_2: 지금까지 인식한 마지막 캡션의 다음 텍스트 토큰이 특정 키워드를 포함하는 경우 해당 토큰이 이어지는 캡션인지 아닌지 구분하는 threshold (y값 거리)
+        '''
+        result = []
+
         # table에 대한 캡션 추출
-        if (check == False) and len(table_object) != 0:
+        if len(table_object) != 0:
             table_data = table_object
             text_data = text_object
             table_bb_to_draw = []
@@ -278,39 +291,16 @@ class Extractor():
                 t_text_contents.append(caption_text_for_this_table)
 
         # 결과 저장
-        if (check == False) and (len(image_object) != 0 or len(table_object) != 0):    
-
-            if len(image_object) != 0:
-                for j in range(len(image_bb_to_draw)):
-                    # im.draw_rect(image_bb_to_draw[j], fill=(255, 255, 0, 30))
-                    im.draw_rects(i_text_bb_to_draw[j])
-                    # print(f'(p.{p+1}) caption for image:', [' '.join(each_caption) for each_caption in i_text_contents[j]])
-                    result['image'].append([' '.join(each_caption) for each_caption in i_text_contents[j]])
-
-            if len(table_object) != 0:
-                for j in range(len(table_bb_to_draw)):
-                    # im.draw_rect(table_bb_to_draw[j], fill=(255, 0, 0, 30))
-                    im.draw_rects(t_text_bb_to_draw[j])
-                    # print(f'(p.{p+1}) caption for table:', [' '.join(each_caption) for each_caption in t_text_contents[j]])
-                    result['table'].append([' '.join(each_caption) for each_caption in t_text_contents[j]])
-
-            # if check == False:
-            #     # 결과를 저장할 디렉터리가 없으면 디렉터리 생성
-            #     if not os.path.exists(f'result/{corp}'):
-            #         os.makedirs(f'result/{corp}') 
-            #     im.save(f'result/{corp}/{p+1}.png', format="PNG")
-
-            # else:
-            #     # 결과를 저장할 디렉터리가 없으면 디렉터리 생성
-            #     if not os.path.exists(f'result/check'):
-            #         os.makedirs(f'result/check') 
-            #     im.save(f'result/check/{p+1}.png', format="PNG")
-
-        # if check == False:
-        #     with open(f'result/{corp}/result.json', 'w') as f: json.dump(result, f, indent="\t", ensure_ascii=False)
+        if len(table_object) != 0:
+            for j in range(len(table_bb_to_draw)):
+                # im.draw_rect(table_bb_to_draw[j], fill=(255, 0, 0, 30))
+                im.draw_rects(t_text_bb_to_draw[j])
+                # print(f'(p.{p+1}) caption for table:', [' '.join(each_caption) for each_caption in t_text_contents[j]])
+                result.append([' '.join(each_caption) for each_caption in t_text_contents[j]])
 
         return im, result
-    
+
+
     def create_bbox_with_img_save(self):
 
         pdf_file_paths = self.file_paths
@@ -384,9 +374,28 @@ class Extractor():
                 
                 # extract caption
                 if caption_is_true == True:
-                    if self.args.page_image == True:
-                        im, caption_info = self.caption_extractor(page, im, image_objects, table_objects, text_objects)
-                    
+                    if self.args.table == True:
+                        if self.args.page_image == True:
+                            im, caption_info_table = self.caption_extractor_table(im, table_objects, text_objects)
+                        else:
+                            _, caption_info_table = self.caption_extractor_table(im, table_objects, text_objects)
+
+                        if self.args.crop == True:
+                            for table_num, table_txt in enumerate(caption_info_table):
+                                with open(os.path.join(pdf_save_directory, 'cropped_caption', f'page{j}_table{table_num}.txt'), 'w', encoding='UTF-8') as f:
+                                    f.write('\n'.join(table_txt))
+
+                    if self.args.image == True:
+                        if self.args.page_image == True:
+                            im, caption_info_image = self.caption_extractor_image(im, image_objects, text_objects)
+                        else:
+                            _, caption_info_image = self.caption_extractor_image(im, image_objects, text_objects)
+
+                        if self.args.crop == True:
+                            for image_num, image_txt in enumerate(caption_info_image):
+                                with open(os.path.join(pdf_save_directory, 'cropped_caption', f'page{j}_image{image_num}.txt'), 'w', encoding='UTF-8') as f:
+                                    f.write('\n'.join(image_txt))
+                                                     
 
                 # append page image to page_img_list
                 page_img_list.append(im)
@@ -395,22 +404,6 @@ class Extractor():
                 if save_path is not None:
                     os.path.join(pdf_save_directory, 'page_image', f'page{j}.png')
                     im.save(os.path.join(pdf_save_directory, 'page_image', f'page{j}.png'), format='PNG')
-
-                if self.args.crop == True and self.args.caption == True:
-                    # with open(os.path.join(pdf_save_directory, 'cropped_caption', f'{str(j)}.json'), 'w', encoding='UTF-8') as f: 
-                    #     json.dump(caption_info, f, indent="\t", ensure_ascii=False)
-                    if self.args.table == True:
-                        for table_num, table_txt in enumerate(caption_info['table']):
-                            with open(os.path.join(pdf_save_directory, 'cropped_caption', f'page{j}_table{table_num}.txt'), 'w', encoding='UTF-8') as f:
-                                f.write('\n'.join(table_txt))
-
-                    if self.args.image == True:
-                        for image_num, image_txt in enumerate(caption_info['image']):
-                            with open(os.path.join(pdf_save_directory, 'cropped_caption', f'page{j}_image{image_num}.txt'), 'w', encoding='UTF-8') as f:
-                                f.write('\n'.join(image_txt))
-
-
-
 
             pdf_dict[pdf_file_paths[i]] = page_img_list
 
