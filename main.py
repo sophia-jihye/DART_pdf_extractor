@@ -24,6 +24,8 @@ if __name__ == '__main__':
     parser.add_argument('--crop', '-crop', action='store_true', default=False)
     parser.add_argument('--page_image', '-page', action='store_true', default=False)
 
+    parser.add_argument('--resolution_object', '-res_object', type=int, default=100)
+    parser.add_argument('--resolution_page', '-res_page', type=int, default=200)
 
     args = parser.parse_args()
 
