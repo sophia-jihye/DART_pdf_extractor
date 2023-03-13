@@ -1,6 +1,6 @@
 import os
 import pickle
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 
 import pdfplumber
 
