@@ -136,6 +136,8 @@ sample_img_file/sample copy/sample copy_3.png
 
 # Additional
 input/
+input_test/
 input_archive/
 output/
+output_various/
 extractor_test.ipynb
